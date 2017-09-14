@@ -160,7 +160,7 @@ export default class Async extends Component {
 		}
 	}
 
-	onInputChange (inputValue) {
+	_onInputChange (inputValue) {
 		const { ignoreAccents, ignoreCase, onInputChange } = this.props;
 		let transformedInputValue = inputValue;
 
