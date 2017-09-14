@@ -1943,6 +1943,7 @@ var Async = function (_Component) {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
 			var autoload = this.props.autoload;
+			var cacheKey = this.state.cacheKey;
 
 
 			if (autoload) {

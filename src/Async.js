@@ -68,6 +68,7 @@ export default class Async extends Component {
 
 	componentDidMount () {
 		const { autoload } = this.props;
+		const { cacheKey } = this.state;
 
 		if (autoload) {
 			this.loadOptions('', 1, cacheKey);
