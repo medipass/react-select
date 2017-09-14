@@ -1930,7 +1930,8 @@ var Async = function (_Component) {
 			isLoading: false,
 			isLoadingPage: false,
 			page: 1,
-			options: props.options
+			options: props.options,
+			cacheKey: 'default'
 		};
 
 		_this._onInputChange = _this._onInputChange.bind(_this);
@@ -1945,7 +1946,7 @@ var Async = function (_Component) {
 
 
 			if (autoload) {
-				this.loadOptions('');
+				this.loadOptions('', 1, cacheKey);
 			}
 		}
 	}, {
@@ -2006,7 +2007,8 @@ var Async = function (_Component) {
 						isLoading: false,
 						isLoadingPage: false,
 						page: page,
-						options: options
+						options: options,
+						cacheKey: cacheKey
 					});
 				}
 			};
@@ -2046,6 +2048,7 @@ var Async = function (_Component) {
 			    ignoreAccents = _props2.ignoreAccents,
 			    ignoreCase = _props2.ignoreCase,
 			    onInputChange = _props2.onInputChange;
+			var cacheKey = this.state.cacheKey;
 
 			var transformedInputValue = inputValue;
 
@@ -2062,7 +2065,7 @@ var Async = function (_Component) {
 			}
 
 			this.setState({ inputValue: inputValue });
-			this.loadOptions(transformedInputValue);
+			this.loadOptions(transformedInputValue, 1, cacheKey);
 
 			// Return the original input value to avoid modifying the user's view of the input while typing.
 			return inputValue;
@@ -2095,9 +2098,11 @@ var Async = function (_Component) {
 	}, {
 		key: '_onMenuScrollToBottom',
 		value: function _onMenuScrollToBottom(inputValue) {
+			var cacheKey = this.state.cacheKey;
+
 			if (!this.props.pagination || this.state.isLoading) return;
 
-			this.loadOptions(inputValue, this.state.page + 1);
+			this.loadOptions(inputValue, this.state.page + 1, cacheKey);
 		}
 	}, {
 		key: 'render',
