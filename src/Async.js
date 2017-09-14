@@ -161,7 +161,7 @@ export default class Async extends Component {
 				isLoading: true,
 				isLoadingPage: page > this.state.page,
 				currentOptions: this.state.options,
-				options: [...this.state.options, { loading: true }]
+				options: this.props.pagination ? [...this.state.options, { loading: true }] : this.state.options
 			});
 		}
 	}

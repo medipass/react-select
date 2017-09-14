@@ -2045,7 +2045,7 @@ var Async = function (_Component) {
 					isLoading: true,
 					isLoadingPage: page > this.state.page,
 					currentOptions: this.state.options,
-					options: [].concat(toConsumableArray(this.state.options), [{ loading: true }])
+					options: this.props.pagination ? [].concat(toConsumableArray(this.state.options), [{ loading: true }]) : this.state.options
 				});
 			}
 		}
