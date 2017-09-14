@@ -1974,24 +1974,20 @@ var Async = function (_Component) {
 			var _this2 = this;
 
 			var page = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+			var cacheKey = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'default';
 			var _props = this.props,
 			    loadOptions = _props.loadOptions,
 			    pagination = _props.pagination;
-			var hasReachedLastPage = this.state.hasReachedLastPage;
 
 			var cache = this._cache;
 
-			if (hasReachedLastPage) {
-				return null;
-			}
-
-			if (cache && Object.prototype.hasOwnProperty.call(cache, inputValue)) {
+			if (cache && Object.prototype.hasOwnProperty.call(cache, cacheKey + '_' + inputValue)) {
 				this.setState({
-					options: cache[inputValue].options,
-					page: cache[inputValue].page
+					options: cache[cacheKey + '_' + inputValue].options,
+					page: cache[cacheKey + '_' + inputValue].page
 				});
 
-				if (!pagination || pagination && (cache[inputValue].page >= page || cache[inputValue].hasReachedLastPage)) {
+				if (!pagination || pagination && (cache[cacheKey + '_' + inputValue].page >= page || cache[cacheKey + '_' + inputValue].hasReachedLastPage)) {
 					return;
 				}
 			}
@@ -2002,22 +1998,21 @@ var Async = function (_Component) {
 
 					var options = data && data.options || [];
 
-					var _hasReachedLastPage = pagination && options.length === 0;
+					var hasReachedLastPage = pagination && options.length === 0;
 
 					if (page > 1) {
 						options = _this2.state.currentOptions.concat(options);
 					}
 
 					if (cache) {
-						cache[inputValue] = { page: page, options: options, hasReachedLastPage: _hasReachedLastPage };
+						cache[cacheKey + '_' + inputValue] = { page: page, options: options, hasReachedLastPage: hasReachedLastPage };
 					}
 
 					_this2.setState({
 						isLoading: false,
 						isLoadingPage: false,
 						page: page,
-						options: options,
-						hasReachedLastPage: _hasReachedLastPage
+						options: options
 					});
 				}
 			};
