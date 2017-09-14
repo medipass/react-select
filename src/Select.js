@@ -1014,8 +1014,6 @@ class Select extends React.Component {
 			);
 		}
 
-		console.log(options);
-
 		return (
 			<div ref={ref => this.wrapper = ref}
 				 className={className}
