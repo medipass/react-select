@@ -1718,8 +1718,6 @@ var Select$1 = function (_React$Component) {
 				);
 			}
 
-			console.log(options);
-
 			return React.createElement(
 				'div',
 				{ ref: function ref(_ref7) {
