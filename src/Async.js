@@ -115,7 +115,7 @@ export default class Async extends Component {
 				const hasReachedLastPage = pagination && options.length === 0;
 
 				if(page > 1) {
-					options = this.state.options.concat(options);
+					options = this.state.currentOptions.concat(options);
 				}
 
 				if (cache) {
@@ -156,6 +156,8 @@ export default class Async extends Component {
 			this.setState({
 				isLoading: true,
 				isLoadingPage: page > this.state.page,
+				currentOptions: this.state.options,
+				options: [...this.state.options, { loading: true }]
 			});
 		}
 	}

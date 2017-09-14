@@ -12,6 +12,7 @@ function filterOptions (options, filterValue, excludeOptions, props) {
 	if (excludeOptions) excludeOptions = excludeOptions.map(i => i[props.valueKey]);
 
 	return options.filter(option => {
+		if (option.loading) return true;
 		if (excludeOptions && excludeOptions.indexOf(option[props.valueKey]) > -1) return false;
 		if (props.filterOption) return props.filterOption.call(this, option, filterValue);
 		if (!filterValue) return true;

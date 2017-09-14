@@ -48,6 +48,7 @@ function filterOptions(options, filterValue, excludeOptions, props) {
 	});
 
 	return options.filter(function (option) {
+		if (option.loading) return true;
 		if (excludeOptions && excludeOptions.indexOf(option[props.valueKey]) > -1) return false;
 		if (props.filterOption) return props.filterOption.call(_this, option, filterValue);
 		if (!filterValue) return true;
@@ -350,6 +351,34 @@ var possibleConstructorReturn = function (self, call) {
   return call && (typeof call === "object" || typeof call === "function") ? call : self;
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var toConsumableArray = function (arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+    return arr2;
+  } else {
+    return Array.from(arr);
+  }
+};
+
 var Option = function (_React$Component) {
 	inherits(Option, _React$Component);
 
@@ -437,6 +466,17 @@ var Option = function (_React$Component) {
 
 			var className = classNames(this.props.className, option.className);
 
+			if (option.loading) {
+				return React__default.createElement(
+					'div',
+					{ className: className },
+					React__default.createElement(
+						'span',
+						{ className: 'Select-loading-zone', 'aria-hidden': 'true' },
+						React__default.createElement('span', { className: 'Select-loading' })
+					)
+				);
+			}
 			return option.disabled ? React__default.createElement(
 				'div',
 				{ className: className,
@@ -1684,6 +1724,8 @@ var Select$1 = function (_React$Component) {
 				);
 			}
 
+			console.log(options);
+
 			return React__default.createElement(
 				'div',
 				{ ref: function ref(_ref7) {
@@ -1960,7 +2002,7 @@ var Async = function (_Component) {
 					var hasReachedLastPage = pagination && options.length === 0;
 
 					if (page > 1) {
-						options = _this2.state.options.concat(options);
+						options = _this2.state.currentOptions.concat(options);
 					}
 
 					if (cache) {
@@ -1998,7 +2040,9 @@ var Async = function (_Component) {
 			if (this._callback && !this.state.isLoading) {
 				this.setState({
 					isLoading: true,
-					isLoadingPage: page > this.state.page
+					isLoadingPage: page > this.state.page,
+					currentOptions: this.state.options,
+					options: [].concat(toConsumableArray(this.state.options), [{ loading: true }])
 				});
 			}
 		}
