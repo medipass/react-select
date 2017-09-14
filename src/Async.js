@@ -85,27 +85,22 @@ export default class Async extends Component {
 		this._callback = null;
 	}
 
-	loadOptions (inputValue, page = 1) {
+	loadOptions (inputValue, page = 1, cacheKey = 'default') {
 		const { loadOptions, pagination } = this.props;
-		const { hasReachedLastPage } = this.state;
 		const cache = this._cache;
-
-		if (hasReachedLastPage) {
-			return null;
-		}
 
 		if (
 			cache &&
 			Object.prototype.hasOwnProperty.call(cache, inputValue)
 		) {
 			this.setState({
-				options: cache[inputValue].options,
-				page: cache[inputValue].page,
+				options: cache[`${cacheKey}_${inputValue}`].options,
+				page: cache[`${cacheKey}_${inputValue}`].page,
 			});
 
 			if (
 				!pagination ||
-				(pagination && (cache[inputValue].page >= page || cache[inputValue].hasReachedLastPage))
+				(pagination && (cache[`${cacheKey}_${inputValue}`].page >= page || cache[`${cacheKey}_${inputValue}`].hasReachedLastPage))
 			) {
 				return;
 			}
@@ -124,15 +119,14 @@ export default class Async extends Component {
 				}
 
 				if (cache) {
-					cache[inputValue] = { page, options, hasReachedLastPage };
+					cache[`${cacheKey}_${inputValue}`] = { page, options, hasReachedLastPage };
 				}
 
 				this.setState({
 					isLoading: false,
 					isLoadingPage: false,
 					page,
-					options,
-					hasReachedLastPage
+					options
 				});
 			}
 		};
