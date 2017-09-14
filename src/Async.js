@@ -91,7 +91,7 @@ export default class Async extends Component {
 
 		if (
 			cache &&
-			Object.prototype.hasOwnProperty.call(cache, inputValue)
+			Object.prototype.hasOwnProperty.call(cache, `${cacheKey}_${inputValue}`)
 		) {
 			this.setState({
 				options: cache[`${cacheKey}_${inputValue}`].options,
