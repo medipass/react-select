@@ -2003,8 +2003,8 @@ var Async = function (_Component) {
 			}
 		}
 	}, {
-		key: 'onInputChange',
-		value: function onInputChange(inputValue) {
+		key: '_onInputChange',
+		value: function _onInputChange(inputValue) {
 			var _props2 = this.props,
 			    ignoreAccents = _props2.ignoreAccents,
 			    ignoreCase = _props2.ignoreCase,
