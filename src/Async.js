@@ -59,6 +59,7 @@ export default class Async extends Component {
 			isLoadingPage: false,
 			page: 1,
 			options: props.options,
+			cacheKey: 'default'
 		};
 
 		this._onInputChange = this._onInputChange.bind(this);
@@ -69,7 +70,7 @@ export default class Async extends Component {
 		const { autoload } = this.props;
 
 		if (autoload) {
-			this.loadOptions('');
+			this.loadOptions('', 1, cacheKey);
 		}
 	}
 
@@ -126,7 +127,8 @@ export default class Async extends Component {
 					isLoading: false,
 					isLoadingPage: false,
 					page,
-					options
+					options,
+					cacheKey
 				});
 			}
 		};
@@ -164,6 +166,7 @@ export default class Async extends Component {
 
 	_onInputChange (inputValue) {
 		const { ignoreAccents, ignoreCase, onInputChange } = this.props;
+		const { cacheKey } = this.state;
 		let transformedInputValue = inputValue;
 
 		if (ignoreAccents) {
@@ -179,7 +182,7 @@ export default class Async extends Component {
 		}
 
 		this.setState({ inputValue });
-		this.loadOptions(transformedInputValue);
+		this.loadOptions(transformedInputValue, 1, cacheKey);
 
 		// Return the original input value to avoid modifying the user's view of the input while typing.
 		return inputValue;
@@ -203,9 +206,10 @@ export default class Async extends Component {
 	}
 
 	_onMenuScrollToBottom (inputValue) {
+		const { cacheKey } = this.state;
 		if (!this.props.pagination || this.state.isLoading) return;
 
-		this.loadOptions(inputValue, this.state.page + 1);
+		this.loadOptions(inputValue, this.state.page + 1, cacheKey);
 	}
 
 	render () {
