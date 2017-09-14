@@ -87,7 +87,12 @@ export default class Async extends Component {
 
 	loadOptions (inputValue, page = 1) {
 		const { loadOptions, pagination } = this.props;
+		const { hasReachedLastPage } = this.state;
 		const cache = this._cache;
+
+		if (hasReachedLastPage) {
+			return null;
+		}
 
 		if (
 			cache &&
@@ -127,6 +132,7 @@ export default class Async extends Component {
 					isLoadingPage: false,
 					page,
 					options,
+					hasReachedLastPage
 				});
 			}
 		};
