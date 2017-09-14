@@ -93,16 +93,16 @@ export default class Async extends Component {
 
 		if (
 			cache &&
-			Object.prototype.hasOwnProperty.call(cache, `${cacheKey}_${inputValue}`)
+			Object.prototype.hasOwnProperty.call(cache, `${cacheKey}${inputValue ? `_${inputValue}` : ''}`)
 		) {
 			this.setState({
-				options: cache[`${cacheKey}_${inputValue}`].options,
-				page: cache[`${cacheKey}_${inputValue}`].page,
+				options: cache[`${cacheKey}${inputValue ? `_${inputValue}` : ''}`].options,
+				page: cache[`${cacheKey}${inputValue ? `_${inputValue}` : ''}`].page,
 			});
 
 			if (
 				!pagination ||
-				(pagination && (cache[`${cacheKey}_${inputValue}`].page >= page || cache[`${cacheKey}_${inputValue}`].hasReachedLastPage))
+				(pagination && (cache[`${cacheKey}${inputValue ? `_${inputValue}` : ''}`].page >= page || cache[`${cacheKey}${inputValue ? `_${inputValue}` : ''}`].hasReachedLastPage))
 			) {
 				return;
 			}
@@ -121,7 +121,7 @@ export default class Async extends Component {
 				}
 
 				if (cache) {
-					cache[`${cacheKey}_${inputValue}`] = { page, options, hasReachedLastPage };
+					cache[`${cacheKey}${inputValue ? `_${inputValue}` : ''}`] = { page, options, hasReachedLastPage };
 				}
 
 				this.setState({
