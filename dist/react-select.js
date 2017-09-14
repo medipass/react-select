@@ -1983,6 +1983,8 @@ var Async = function (_Component) {
 
 			var cache = this._cache;
 
+			this.setState({ cacheKey: cacheKey });
+
 			if (cache && Object.prototype.hasOwnProperty.call(cache, '' + cacheKey + (inputValue ? '_' + inputValue : ''))) {
 				this.setState({
 					options: cache['' + cacheKey + (inputValue ? '_' + inputValue : '')].options,
@@ -2014,8 +2016,7 @@ var Async = function (_Component) {
 						isLoading: false,
 						isLoadingPage: false,
 						page: page,
-						options: options,
-						cacheKey: cacheKey
+						options: options
 					});
 				}
 			};

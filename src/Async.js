@@ -91,6 +91,8 @@ export default class Async extends Component {
 		const { loadOptions, pagination } = this.props;
 		const cache = this._cache;
 
+		this.setState({ cacheKey });
+
 		if (
 			cache &&
 			Object.prototype.hasOwnProperty.call(cache, `${cacheKey}${inputValue ? `_${inputValue}` : ''}`)
@@ -128,8 +130,7 @@ export default class Async extends Component {
 					isLoading: false,
 					isLoadingPage: false,
 					page,
-					options,
-					cacheKey
+					options
 				});
 			}
 		};
