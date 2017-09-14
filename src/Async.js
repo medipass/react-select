@@ -61,12 +61,8 @@ export default class Async extends Component {
 			options: props.options,
 		};
 
-<<<<<<< HEAD
 		this._onInputChange = this._onInputChange.bind(this);
 		this._onMenuScrollToBottom = this._onMenuScrollToBottom.bind(this);
-=======
-		this.onInputChange = this.onInputChange.bind(this);
->>>>>>> origin
 	}
 
 	componentDidMount () {
@@ -211,13 +207,8 @@ export default class Async extends Component {
 	}
 
 	render () {
-<<<<<<< HEAD
 		const { children, loadingPlaceholder, placeholder } = this.props;
 		const { isLoading, isLoadingPage, options } = this.state;
-=======
-		const { children, loadingPlaceholder, multi, onChange, placeholder, value } = this.props;
-		const { isLoading, options } = this.state;
->>>>>>> origin
 
 		const props = {
 			noResultsText: this.noResultsText(),
@@ -230,12 +221,8 @@ export default class Async extends Component {
 			...this.props,
 			...props,
 			isLoading,
-<<<<<<< HEAD
 			onInputChange: this._onInputChange,
 			onMenuScrollToBottom: this._onMenuScrollToBottom,
-=======
-			onInputChange: this.onInputChange
->>>>>>> origin
 		});
 	}
 }
