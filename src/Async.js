@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import debounce from './utils/debounce';
 import Select from './Select';
 import stripDiacritics from './utils/stripDiacritics';
 const propTypes = {
