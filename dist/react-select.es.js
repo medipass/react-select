@@ -1924,7 +1924,7 @@ var Async = function (_Component) {
 
 		var _this = possibleConstructorReturn(this, (Async.__proto__ || Object.getPrototypeOf(Async)).call(this, props, context));
 
-		_this.loadOptions = debounce(function (inputValue) {
+		_this.loadOptions = function (inputValue) {
 			var page = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
 			var cacheKey = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'default';
 			var _this$props = _this.props,
@@ -1998,6 +1998,10 @@ var Async = function (_Component) {
 					options: _this.props.pagination ? [].concat(toConsumableArray(_this.state.options), [{ loading: true }]) : _this.state.options
 				});
 			}
+		};
+
+		_this.loadOptionsDebounced = debounce(function () {
+			return _this.loadOptions.apply(_this, arguments);
 		}, 500);
 
 
@@ -2066,7 +2070,7 @@ var Async = function (_Component) {
 			}
 
 			this.setState({ inputValue: inputValue });
-			this.loadOptions(transformedInputValue, 1, cacheKey);
+			this.loadOptionsDebounced(transformedInputValue, 1, cacheKey);
 
 			// Return the original input value to avoid modifying the user's view of the input while typing.
 			return inputValue;
