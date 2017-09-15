@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Select from './Select';
-import debounce from './utils/debounce';
 import stripDiacritics from './utils/stripDiacritics';
 const propTypes = {
 	autoload: PropTypes.bool.isRequired,       // automatically call the `loadOptions` prop on-mount; defaults to true
@@ -63,7 +62,6 @@ export default class Async extends Component {
 			cacheKey: 'default'
 		};
 
-		this._onInputChange = this._onInputChange.bind(this);
 		this._onMenuScrollToBottom = this._onMenuScrollToBottom.bind(this);
 	}
 
@@ -167,7 +165,7 @@ export default class Async extends Component {
 		}
 	}
 
-	_onInputChange (inputValue) {
+	_onInputChange = debounce((inputValue) => {
 		const { ignoreAccents, ignoreCase, onInputChange } = this.props;
 		const { cacheKey } = this.state;
 		let transformedInputValue = inputValue;
@@ -189,7 +187,7 @@ export default class Async extends Component {
 
 		// Return the original input value to avoid modifying the user's view of the input while typing.
 		return inputValue;
-	}
+	}, 500)
 
 	noResultsText() {
 		const { loadingPlaceholder, noResultsText, searchPromptText } = this.props;
@@ -230,7 +228,7 @@ export default class Async extends Component {
 			...this.props,
 			...props,
 			isLoading,
-			onInputChange: debounce(this._onInputChange, 500),
+			onInputChange: this._onInputChange,
 			onMenuScrollToBottom: this._onMenuScrollToBottom,
 		});
 	}
