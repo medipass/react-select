@@ -63,6 +63,7 @@ export default class Async extends Component {
 			cacheKey: 'default'
 		};
 
+		this._onInputChange = this._onInputChange.bind(this);
 		this._onMenuScrollToBottom = this._onMenuScrollToBottom.bind(this);
 	}
 

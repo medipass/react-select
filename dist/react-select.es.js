@@ -2012,6 +2012,7 @@ var Async = function (_Component) {
 			cacheKey: 'default'
 		};
 
+		_this._onInputChange = _this._onInputChange.bind(_this);
 		_this._onMenuScrollToBottom = _this._onMenuScrollToBottom.bind(_this);
 		return _this;
 	}
