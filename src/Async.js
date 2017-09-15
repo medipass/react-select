@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import debounce from './utils/debounce';
 import Select from './Select';
 import stripDiacritics from './utils/stripDiacritics';
 const propTypes = {
@@ -223,13 +222,14 @@ export default class Async extends Component {
 			noResultsText: this.noResultsText(),
 			placeholder: isLoading ? loadingPlaceholder : placeholder,
 			options: (isLoading && loadingPlaceholder && !isLoadingPage) ? [] : options,
+			ref: (ref) => (this.select = ref),
 		};
 
 		return children({
 			...this.props,
 			...props,
 			isLoading,
-			onInputChange: debounce(this._onInputChange, 500),
+			onInputChange: this._onInputChange,
 			onMenuScrollToBottom: this._onMenuScrollToBottom,
 		});
 	}
