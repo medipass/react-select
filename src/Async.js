@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Select from './Select';
+import debounce from './utils/debounce';
 import stripDiacritics from './utils/stripDiacritics';
 const propTypes = {
 	autoload: PropTypes.bool.isRequired,       // automatically call the `loadOptions` prop on-mount; defaults to true
@@ -229,7 +230,7 @@ export default class Async extends Component {
 			...this.props,
 			...props,
 			isLoading,
-			onInputChange: this._onInputChange,
+			onInputChange: debounce(this._onInputChange, 500),
 			onMenuScrollToBottom: this._onMenuScrollToBottom,
 		});
 	}
