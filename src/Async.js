@@ -87,7 +87,7 @@ export default class Async extends Component {
 		this._callback = null;
 	}
 
-	loadOptions (inputValue, page = 1, cacheKey = 'default') {
+	loadOptions = debounce((inputValue, page = 1, cacheKey = 'default') => {
 		const { loadOptions, pagination } = this.props;
 		const cache = this._cache;
 
@@ -164,9 +164,9 @@ export default class Async extends Component {
 				options: this.props.pagination ? [...this.state.options, { loading: true }] : this.state.options
 			});
 		}
-	}
+	}, 500)
 
-	_onInputChange = debounce((inputValue) => {
+	_onInputChange (inputValue) {
 		const { ignoreAccents, ignoreCase, onInputChange } = this.props;
 		const { cacheKey } = this.state;
 		let transformedInputValue = inputValue;
@@ -188,7 +188,7 @@ export default class Async extends Component {
 
 		// Return the original input value to avoid modifying the user's view of the input while typing.
 		return inputValue;
-	}, 500)
+	}
 
 	noResultsText() {
 		const { loadingPlaceholder, noResultsText, searchPromptText } = this.props;

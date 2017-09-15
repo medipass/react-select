@@ -1924,32 +1924,80 @@ var Async = function (_Component) {
 
 		var _this = possibleConstructorReturn(this, (Async.__proto__ || Object.getPrototypeOf(Async)).call(this, props, context));
 
-		_this._onInputChange = debounce(function (inputValue) {
+		_this.loadOptions = debounce(function (inputValue) {
+			var page = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+			var cacheKey = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'default';
 			var _this$props = _this.props,
-			    ignoreAccents = _this$props.ignoreAccents,
-			    ignoreCase = _this$props.ignoreCase,
-			    onInputChange = _this$props.onInputChange;
-			var cacheKey = _this.state.cacheKey;
+			    loadOptions = _this$props.loadOptions,
+			    pagination = _this$props.pagination;
 
-			var transformedInputValue = inputValue;
+			var cache = _this._cache;
 
-			if (ignoreAccents) {
-				transformedInputValue = stripDiacritics(transformedInputValue);
+			_this.setState({ cacheKey: cacheKey });
+
+			if (cache && Object.prototype.hasOwnProperty.call(cache, '' + cacheKey + (inputValue ? '_' + inputValue : ''))) {
+				_this.setState({
+					options: cache['' + cacheKey + (inputValue ? '_' + inputValue : '')].options,
+					page: cache['' + cacheKey + (inputValue ? '_' + inputValue : '')].page
+				});
+
+				if (!pagination || pagination && (cache['' + cacheKey + (inputValue ? '_' + inputValue : '')].page >= page || cache['' + cacheKey + (inputValue ? '_' + inputValue : '')].hasReachedLastPage)) {
+					return;
+				}
 			}
 
-			if (ignoreCase) {
-				transformedInputValue = transformedInputValue.toLowerCase();
+			var callback = function callback(error, data) {
+				if (callback === _this._callback) {
+					_this._callback = null;
+
+					var options = data && data.options || [];
+
+					var hasReachedLastPage = pagination && options.length === 0;
+
+					if (page > 1) {
+						options = _this.state.currentOptions.concat(options);
+					}
+
+					if (cache) {
+						cache['' + cacheKey + (inputValue ? '_' + inputValue : '')] = { page: page, options: options, hasReachedLastPage: hasReachedLastPage };
+					}
+
+					_this.setState({
+						isLoading: false,
+						isLoadingPage: false,
+						page: page,
+						options: options
+					});
+				}
+			};
+
+			// Ignore all but the most recent request
+			_this._callback = callback;
+
+			var promise = void 0;
+
+			if (pagination) {
+				promise = loadOptions(inputValue, page, callback);
+			} else {
+				promise = loadOptions(inputValue, callback);
 			}
 
-			if (onInputChange) {
-				onInputChange(transformedInputValue);
+			if (promise) {
+				promise.then(function (data) {
+					return callback(null, data);
+				}, function (error) {
+					return callback(error);
+				});
 			}
 
-			_this.setState({ inputValue: inputValue });
-			_this.loadOptions(transformedInputValue, 1, cacheKey);
-
-			// Return the original input value to avoid modifying the user's view of the input while typing.
-			return inputValue;
+			if (_this._callback && !_this.state.isLoading) {
+				_this.setState({
+					isLoading: true,
+					isLoadingPage: page > _this.state.page,
+					currentOptions: _this.state.options,
+					options: _this.props.pagination ? [].concat(toConsumableArray(_this.state.options), [{ loading: true }]) : _this.state.options
+				});
+			}
 		}, 500);
 
 
@@ -1994,83 +2042,33 @@ var Async = function (_Component) {
 			this._callback = null;
 		}
 	}, {
-		key: 'loadOptions',
-		value: function loadOptions(inputValue) {
-			var _this2 = this;
-
-			var page = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
-			var cacheKey = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'default';
+		key: '_onInputChange',
+		value: function _onInputChange(inputValue) {
 			var _props = this.props,
-			    loadOptions = _props.loadOptions,
-			    pagination = _props.pagination;
+			    ignoreAccents = _props.ignoreAccents,
+			    ignoreCase = _props.ignoreCase,
+			    onInputChange = _props.onInputChange;
+			var cacheKey = this.state.cacheKey;
 
-			var cache = this._cache;
+			var transformedInputValue = inputValue;
 
-			this.setState({ cacheKey: cacheKey });
-
-			if (cache && Object.prototype.hasOwnProperty.call(cache, '' + cacheKey + (inputValue ? '_' + inputValue : ''))) {
-				this.setState({
-					options: cache['' + cacheKey + (inputValue ? '_' + inputValue : '')].options,
-					page: cache['' + cacheKey + (inputValue ? '_' + inputValue : '')].page
-				});
-
-				if (!pagination || pagination && (cache['' + cacheKey + (inputValue ? '_' + inputValue : '')].page >= page || cache['' + cacheKey + (inputValue ? '_' + inputValue : '')].hasReachedLastPage)) {
-					return;
-				}
+			if (ignoreAccents) {
+				transformedInputValue = stripDiacritics(transformedInputValue);
 			}
 
-			var callback = function callback(error, data) {
-				if (callback === _this2._callback) {
-					_this2._callback = null;
-
-					var options = data && data.options || [];
-
-					var hasReachedLastPage = pagination && options.length === 0;
-
-					if (page > 1) {
-						options = _this2.state.currentOptions.concat(options);
-					}
-
-					if (cache) {
-						cache['' + cacheKey + (inputValue ? '_' + inputValue : '')] = { page: page, options: options, hasReachedLastPage: hasReachedLastPage };
-					}
-
-					_this2.setState({
-						isLoading: false,
-						isLoadingPage: false,
-						page: page,
-						options: options
-					});
-				}
-			};
-
-			// Ignore all but the most recent request
-			this._callback = callback;
-
-			var promise = void 0;
-
-			if (pagination) {
-				promise = loadOptions(inputValue, page, callback);
-			} else {
-				promise = loadOptions(inputValue, callback);
+			if (ignoreCase) {
+				transformedInputValue = transformedInputValue.toLowerCase();
 			}
 
-			if (promise) {
-				promise.then(function (data) {
-					return callback(null, data);
-				}, function (error) {
-					return callback(error);
-				});
+			if (onInputChange) {
+				onInputChange(transformedInputValue);
 			}
 
-			if (this._callback && !this.state.isLoading) {
-				this.setState({
-					isLoading: true,
-					isLoadingPage: page > this.state.page,
-					currentOptions: this.state.options,
-					options: this.props.pagination ? [].concat(toConsumableArray(this.state.options), [{ loading: true }]) : this.state.options
-				});
-			}
+			this.setState({ inputValue: inputValue });
+			this.loadOptions(transformedInputValue, 1, cacheKey);
+
+			// Return the original input value to avoid modifying the user's view of the input while typing.
+			return inputValue;
 		}
 	}, {
 		key: 'noResultsText',
@@ -2109,7 +2107,7 @@ var Async = function (_Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var _this3 = this;
+			var _this2 = this;
 
 			var _props3 = this.props,
 			    children = _props3.children,
@@ -2126,7 +2124,7 @@ var Async = function (_Component) {
 				placeholder: isLoading ? loadingPlaceholder : placeholder,
 				options: isLoading && loadingPlaceholder && !isLoadingPage ? [] : options,
 				ref: function ref(_ref) {
-					return _this3.select = _ref;
+					return _this2.select = _ref;
 				}
 			};
 
