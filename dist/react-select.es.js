@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import AutosizeInput from 'react-input-autosize';
 import classNames from 'classnames';
-import debounce from 'debounce-promise';
+import debounce from 'lodash/debounce';
 
 function arrowRenderer(_ref) {
 	var onMouseDown = _ref.onMouseDown;
