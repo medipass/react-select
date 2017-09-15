@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "classnames": "^2.2.4",
+    "debounce-promise": "^3.0.1",
     "prop-types": "^15.5.8",
     "react-input-autosize": "^2.0.1"
   },
