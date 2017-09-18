@@ -1879,7 +1879,7 @@ Select$1.defaultProps = {
 	tabSelectsValue: true,
 	valueComponent: Value,
 	valueKey: 'value',
-	outerMenuAddonComponent: {}
+	outerMenuAddonComponent: React.createElement('div', null)
 };
 
 var propTypes = {
