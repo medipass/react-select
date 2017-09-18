@@ -970,6 +970,7 @@ class Select extends React.Component {
 						 onMouseDown={this.handleMouseDownOnMenu}>
 					{menu}
 				</div>
+				{this.props.outerMenuAddonComponent}
 			</div>
 		);
 	}
@@ -1101,6 +1102,7 @@ Select.propTypes = {
 	optionComponent: PropTypes.func,      // option component to render in dropdown
 	optionRenderer: PropTypes.func,       // optionRenderer: function (option) {}
 	options: PropTypes.array,             // array of options
+	outerMenuAddonComponent: PropTypes.object,
 	pageSize: PropTypes.number,           // number of entries to page when using page up/down keys
 	placeholder: stringOrNode,            // field placeholder, displayed when there's no value
 	required: PropTypes.bool,             // applies HTML5 required attribute when needed
@@ -1160,6 +1162,7 @@ Select.defaultProps = {
 	tabSelectsValue: true,
 	valueComponent: Value,
 	valueKey: 'value',
+	outerMenuAddonComponent: {}
 };
 
 export default Select;
