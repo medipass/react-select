@@ -1162,7 +1162,7 @@ Select.defaultProps = {
 	tabSelectsValue: true,
 	valueComponent: Value,
 	valueKey: 'value',
-	outerMenuAddonComponent: {}
+	outerMenuAddonComponent: <div/>
 };
 
 export default Select;
