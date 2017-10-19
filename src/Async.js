@@ -98,6 +98,8 @@ export default class Async extends Component {
 			cache &&
 			Object.prototype.hasOwnProperty.call(cache, `${cacheKey}${inputValue ? `_${inputValue}` : ''}`)
 		) {
+			this._callback = null;
+
 			this.setState({
 				options: cache[`${cacheKey}${inputValue ? `_${inputValue}` : ''}`].options,
 				page: cache[`${cacheKey}${inputValue ? `_${inputValue}` : ''}`].page,
@@ -112,28 +114,24 @@ export default class Async extends Component {
 		}
 
 		const callback = (error, data) => {
-			if (callback === this._callback) {
-				this._callback = null;
+			let options = data && data.options || [];
 
-				let options = data && data.options || [];
+			const hasReachedLastPage = pagination && options.length === 0;
 
-				const hasReachedLastPage = pagination && options.length === 0;
-
-				if(page > 1) {
-					options = this.state.currentOptions.concat(options);
-				}
-
-				if (cache) {
-					cache[`${cacheKey}${inputValue ? `_${inputValue}` : ''}`] = { page, options, hasReachedLastPage };
-				}
-
-				this.setState({
-					isLoading: false,
-					isLoadingPage: false,
-					page,
-					options
-				});
+			if(page > 1) {
+				options = this.state.currentOptions.concat(options);
 			}
+
+			if (cache) {
+				cache[`${cacheKey}${inputValue ? `_${inputValue}` : ''}`] = { page, options, hasReachedLastPage };
+			}
+
+			this.setState({
+				isLoading: false,
+				isLoadingPage: false,
+				page,
+				options
+			});
 		};
 
 		// Ignore all but the most recent request

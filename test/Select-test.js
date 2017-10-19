@@ -39,7 +39,6 @@ class PropsWrapper extends React.Component {
 		super(props);
 		this.state = props || {};
 	}
-
 	setPropsForChild(props) {
 		this.setState(props);
 	}
@@ -1606,8 +1605,7 @@ describe('Select', () => {
 				value: 'one',
 				options: options,
 				allowCreate: true,
-				searchable: true,
-				addLabelText: 'Add {label} to values?'
+				searchable: true
 			});
 		});
 
@@ -3010,7 +3008,7 @@ describe('Select', () => {
 				expect(instance.state.isOpen, 'to be true');
 			});
 
-			it('should open the menu on focus when false', () => {
+			it('should not open the menu on focus when false', () => {
 				instance = createControl({
 					options: defaultOptions,
 					openOnFocus: false,
@@ -3783,6 +3781,24 @@ describe('Select', () => {
 		});
 	});
 
+	describe('custom arrowRenderer option', () => {
+		it('should render the custom arrow', () => {
+			const instance = createControl({
+				options: [1,2,3],
+				arrowRenderer: () => <div className="customArrow" />
+			});
+			expect(ReactDOM.findDOMNode(instance), 'to contain elements matching', '.customArrow');
+		});
+
+		it('should not render the clickable arrow container if the arrowRenderer returns a falsy value', () => {
+			const instance = createControl({
+				options: [1,2,3],
+				arrowRenderer: () => null
+			});
+			expect(ReactDOM.findDOMNode(instance), 'to contain no elements matching', '.Select-arrow-zone');
+		});
+	});
+
 	describe('accessibility', () => {
 
 		describe('with basic searchable control', () => {
@@ -3952,6 +3968,60 @@ describe('Select', () => {
 			expect(input, 'not to equal', document.activeElement);
 			instance.focus();
 			expect(input, 'to equal', document.activeElement);
+		});
+	});
+
+	describe('arrowRenderer', () => {
+		beforeEach(() => {
+			instance = createControl({
+				arrowRenderer: null
+			});
+		});
+
+		it('doesn\'t render arrow if arrowRenderer props is null', () => {
+
+			var arrow = ReactDOM.findDOMNode(instance).querySelectorAll('.Select-arrow-zone')[0];
+
+			expect(arrow, 'to be', undefined);
+		});
+	});
+
+	describe('with autoFocus', () => {
+		it('focuses select input on mount', () => {
+			wrapper = createControl({
+				autoFocus: true,
+				options: defaultOptions,
+			});
+			var input = ReactDOM.findDOMNode(instance.input).querySelector('input');
+			expect(input, 'to equal', document.activeElement);
+		});
+		it('with autofocus as well, calls focus() only once', () => {
+			wrapper = createControl({
+				autofocus: true,
+				autoFocus: true,
+				options: defaultOptions,
+			});
+			var focus = sinon.spy(instance, 'focus');
+			instance.componentDidMount();
+			expect(focus, 'was called once');
+		});
+	});
+	describe('with autofocus', () => {
+		it('focuses the select input on mount', () => {
+			wrapper = createControl({
+				autofocus: true,
+				options: defaultOptions,
+			});
+			var input = ReactDOM.findDOMNode(instance.input).querySelector('input');
+			expect(input, 'to equal', document.activeElement);
+		});
+		it('calls console.warn', () => {
+			var warn = sinon.spy(console, 'warn');
+			wrapper = createControl({
+				autofocus: true,
+				options: defaultOptions,
+			});
+			expect(warn, 'was called once');
 		});
 	});
 });
