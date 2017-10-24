@@ -72,6 +72,15 @@ class Option extends React.Component {
 		var { option, instancePrefix, optionIndex } = this.props;
 		var className = classNames(this.props.className, option.className);
 
+		if (option.loading) {
+			return (
+				<div className={className}>
+					<span className="Select-loading-zone" aria-hidden="true">
+						<span className="Select-loading" />
+					</span>
+				</div>
+			);
+		}
 		return option.disabled ? (
 			<div className={className}
 				onMouseDown={this.blockEvent}

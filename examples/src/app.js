@@ -8,6 +8,7 @@ import './example.less';
 import Creatable from './components/Creatable';
 import Contributors from './components/Contributors';
 import GithubUsers from './components/GithubUsers';
+import GithubUsersPagination from './components/GithubUsersPagination';
 import CustomComponents from './components/CustomComponents';
 import CustomRender from './components/CustomRender';
 import Multiselect from './components/Multiselect';
@@ -22,7 +23,8 @@ ReactDOM.render(
 		<Multiselect label="Multiselect" />
 		<Virtualized label="Virtualized" />
 		<Contributors label="Contributors (Async)" />
-		<GithubUsers label="GitHub users (Async with fetch.js)" />
+		<GithubUsers label="Github users (Async with fetch.js)" />
+		<GithubUsersPagination label="Github users (Async Pagination with fetch.js)" />
 		<NumericSelect label="Numeric Values" />
 		<BooleanSelect label="Boolean Values" />
 		<CustomRender label="Custom Render Methods"/>

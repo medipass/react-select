@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import debounce from 'lodash/debounce';
 import Select from './Select';
 import stripDiacritics from './utils/stripDiacritics';
 const propTypes = {
@@ -14,6 +15,7 @@ const propTypes = {
 		PropTypes.node
 	]),
 	multi: PropTypes.bool,                     // multi-value input
+	pagination: PropTypes.bool,								 // automatically load more options when the option list is scrolled to the end; default to false
 	noResultsText: PropTypes.oneOfType([       // field noResultsText, displayed when no options come back from the server
 		PropTypes.string,
 		PropTypes.node
@@ -42,6 +44,7 @@ const defaultProps = {
 	ignoreCase: true,
 	loadingPlaceholder: 'Loading...',
 	options: [],
+	pagination: false,
 	searchPromptText: 'Type to search',
 };
 
@@ -54,17 +57,22 @@ export default class Async extends Component {
 		this.state = {
 			inputValue: '',
 			isLoading: false,
+			isLoadingPage: false,
+			page: 1,
 			options: props.options,
+			cacheKey: 'default'
 		};
 
-		this.onInputChange = this.onInputChange.bind(this);
+		this._onInputChange = this._onInputChange.bind(this);
+		this._onMenuScrollToBottom = this._onMenuScrollToBottom.bind(this);
 	}
 
 	componentDidMount () {
 		const { autoload } = this.props;
+		const { cacheKey } = this.state;
 
 		if (autoload) {
-			this.loadOptions('');
+			this.loadOptions('', 1, cacheKey);
 		}
 	}
 
@@ -80,45 +88,63 @@ export default class Async extends Component {
 		this._callback = null;
 	}
 
-	loadOptions (inputValue) {
-		const { loadOptions } = this.props;
+	loadOptions = (inputValue, page = 1, cacheKey = 'default') => {
+		const { loadOptions, pagination } = this.props;
 		const cache = this._cache;
+
+		this.setState({ cacheKey });
 
 		if (
 			cache &&
-			Object.prototype.hasOwnProperty.call(cache, inputValue)
+			Object.prototype.hasOwnProperty.call(cache, `${cacheKey}${inputValue ? `_${inputValue}` : ''}`)
 		) {
 			this._callback = null;
 
 			this.setState({
-				isLoading: false,
-				options: cache[inputValue]
+				options: cache[`${cacheKey}${inputValue ? `_${inputValue}` : ''}`].options,
+				page: cache[`${cacheKey}${inputValue ? `_${inputValue}` : ''}`].page,
 			});
 
-			return;
+			if (
+				!pagination ||
+				(pagination && (cache[`${cacheKey}${inputValue ? `_${inputValue}` : ''}`].page >= page || cache[`${cacheKey}${inputValue ? `_${inputValue}` : ''}`].hasReachedLastPage))
+			) {
+				return;
+			}
 		}
 
 		const callback = (error, data) => {
-			const options = data && data.options || [];
+			let options = data && data.options || [];
+
+			const hasReachedLastPage = pagination && options.length === 0;
+
+			if(page > 1) {
+				options = this.state.currentOptions.concat(options);
+			}
 
 			if (cache) {
-				cache[inputValue] = options;
+				cache[`${cacheKey}${inputValue ? `_${inputValue}` : ''}`] = { page, options, hasReachedLastPage };
 			}
 
-			if (callback === this._callback) {
-				this._callback = null;
-
-				this.setState({
-					isLoading: false,
-					options
-				});
-			}
+			this.setState({
+				isLoading: false,
+				isLoadingPage: false,
+				page,
+				options
+			});
 		};
 
 		// Ignore all but the most recent request
 		this._callback = callback;
 
-		const promise = loadOptions(inputValue, callback);
+		let promise;
+
+		if (pagination) {
+			promise = loadOptions(inputValue, page, callback);
+		} else {
+			promise = loadOptions(inputValue, callback);
+		}
+
 		if (promise) {
 			promise.then(
 				(data) => callback(null, data),
@@ -131,13 +157,19 @@ export default class Async extends Component {
 			!this.state.isLoading
 		) {
 			this.setState({
-				isLoading: true
+				isLoading: true,
+				isLoadingPage: page > this.state.page,
+				currentOptions: this.state.options,
+				options: this.props.pagination ? [...this.state.options, { loading: true }] : this.state.options
 			});
 		}
 	}
 
-	onInputChange (inputValue) {
+	loadOptionsDebounced = debounce((...args) => this.loadOptions(...args), 500);
+
+	_onInputChange (inputValue) {
 		const { ignoreAccents, ignoreCase, onInputChange } = this.props;
+		const { cacheKey } = this.state;
 		let transformedInputValue = inputValue;
 
 		if (ignoreAccents) {
@@ -153,7 +185,7 @@ export default class Async extends Component {
 		}
 
 		this.setState({ inputValue });
-		this.loadOptions(transformedInputValue);
+		this.loadOptionsDebounced(transformedInputValue, 1, cacheKey);
 
 		// Return the original input value to avoid modifying the user's view of the input while typing.
 		return inputValue;
@@ -176,14 +208,21 @@ export default class Async extends Component {
 		this.select.focus();
 	}
 
+	_onMenuScrollToBottom (inputValue) {
+		const { cacheKey } = this.state;
+		if (!this.props.pagination || this.state.isLoading) return;
+
+		this.loadOptions(inputValue, this.state.page + 1, cacheKey);
+	}
+
 	render () {
-		const { children, loadingPlaceholder, multi, onChange, placeholder, value } = this.props;
-		const { isLoading, options } = this.state;
+		const { children, loadingPlaceholder, placeholder } = this.props;
+		const { isLoading, isLoadingPage, options } = this.state;
 
 		const props = {
 			noResultsText: this.noResultsText(),
 			placeholder: isLoading ? loadingPlaceholder : placeholder,
-			options: (isLoading && loadingPlaceholder) ? [] : options,
+			options: (isLoading && loadingPlaceholder && !isLoadingPage) ? [] : options,
 			ref: (ref) => (this.select = ref),
 		};
 
@@ -191,7 +230,8 @@ export default class Async extends Component {
 			...this.props,
 			...props,
 			isLoading,
-			onInputChange: this.onInputChange
+			onInputChange: this._onInputChange,
+			onMenuScrollToBottom: this._onMenuScrollToBottom,
 		});
 	}
 }

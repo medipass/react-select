@@ -443,8 +443,8 @@ class Select extends React.Component {
 	handleMenuScroll (event) {
 		if (!this.props.onMenuScrollToBottom) return;
 		let { target } = event;
-		if (target.scrollHeight > target.offsetHeight && (target.scrollHeight - target.offsetHeight - target.scrollTop) <= 0) {
-			this.props.onMenuScrollToBottom();
+		if (target.scrollHeight > target.offsetHeight && !(target.scrollHeight - target.offsetHeight - target.scrollTop)) {
+			this.props.onMenuScrollToBottom(this.state.inputValue);
 		}
 	}
 
@@ -977,6 +977,7 @@ class Select extends React.Component {
 						 onMouseDown={this.handleMouseDownOnMenu}>
 					{menu}
 				</div>
+				{this.props.outerMenuAddonComponent}
 			</div>
 		);
 	}
@@ -1109,6 +1110,7 @@ Select.propTypes = {
 	optionComponent: PropTypes.func,      // option component to render in dropdown
 	optionRenderer: PropTypes.func,       // optionRenderer: function (option) {}
 	options: PropTypes.array,             // array of options
+	outerMenuAddonComponent: PropTypes.object,
 	pageSize: PropTypes.number,           // number of entries to page when using page up/down keys
 	placeholder: stringOrNode,            // field placeholder, displayed when there's no value
 	required: PropTypes.bool,             // applies HTML5 required attribute when needed
@@ -1169,6 +1171,7 @@ Select.defaultProps = {
  	trimFilter: true,
 	valueComponent: Value,
 	valueKey: 'value',
+	outerMenuAddonComponent: <div/>
 };
 
 export default Select;
