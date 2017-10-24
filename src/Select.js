@@ -78,7 +78,10 @@ class Select extends React.Component {
 	}
 
 	componentDidMount () {
-		if (this.props.autofocus) {
+		if (typeof this.props.autofocus !== 'undefined' && typeof console !== 'undefined') {
+			console.warn('Warning: The autofocus prop will be deprecated in react-select1.0.0 in favor of autoFocus to match React\'s autoFocus prop');
+		}
+		if (this.props.autoFocus || this.props.autofocus) {
 			this.focus();
 		}
 	}
@@ -140,11 +143,7 @@ class Select extends React.Component {
 	}
 
 	componentWillUnmount () {
-		if (!document.removeEventListener && document.detachEvent) {
-			document.detachEvent('ontouchstart', this.handleTouchOutside);
-		} else {
-			document.removeEventListener('touchstart', this.handleTouchOutside);
-		}
+		this.toggleTouchOutsideEvent(false);
 	}
 
 	toggleTouchOutsideEvent (enabled) {
@@ -806,14 +805,14 @@ class Select extends React.Component {
 			);
 		}
 		return (
-			<div className={ className }>
+			<div className={ className } key="input-wrap">
 				<input {...inputProps} />
 			</div>
 		);
 	}
 
 	renderClear () {
-		if (!this.props.clearable || this.props.value === undefined || this.props.value === null || this.props.multi && !this.props.value.length || this.props.disabled || this.props.isLoading) return;
+		if (!this.props.clearable || this.props.value === undefined || this.props.value === null || this.props.value === '' || this.props.multi && !this.props.value.length || this.props.disabled || this.props.isLoading) return;
 		const clear = this.props.clearRenderer();
 
 		return (
@@ -830,9 +829,15 @@ class Select extends React.Component {
 	}
 
 	renderArrow () {
+		if (!this.props.arrowRenderer) return;
+
 		const onMouseDown = this.handleMouseDownOnArrow;
 		const isOpen = this.state.isOpen;
 		const arrow = this.props.arrowRenderer({ onMouseDown, isOpen });
+
+		if (!arrow) {
+			return null;
+		}
 
 		return (
 			<span
@@ -970,6 +975,7 @@ class Select extends React.Component {
 						 onMouseDown={this.handleMouseDownOnMenu}>
 					{menu}
 				</div>
+				{this.props.outerMenuAddonComponent}
 			</div>
 		);
 	}
@@ -1047,10 +1053,10 @@ Select.propTypes = {
 	'aria-describedby': PropTypes.string, // HTML ID(s) of element(s) that should be used to describe this input (for assistive tech)
 	'aria-label': PropTypes.string,       // Aria label (for assistive tech)
 	'aria-labelledby': PropTypes.string,  // HTML ID of an element that should be used as the label (for assistive tech)
-	addLabelText: PropTypes.string,       // placeholder displayed when you want to add a label on a multi-value input
 	arrowRenderer: PropTypes.func,        // Create drop-down caret element
 	autoBlur: PropTypes.bool,             // automatically blur the component when an option is selected
-	autofocus: PropTypes.bool,            // autofocus the component on mount
+	autofocus: PropTypes.bool,            // deprecated; use autoFocus instead
+	autoFocus: PropTypes.bool,            // autofocus the component on mount
 	autosize: PropTypes.bool,             // whether to enable autosizing or not
 	backspaceRemoves: PropTypes.bool,     // whether backspace removes an item if there is no text input
 	backspaceToRemoveMessage: PropTypes.string,  // Message to use for screenreaders to press backspace to remove the current item - {label} is replaced with the item label
@@ -1101,6 +1107,7 @@ Select.propTypes = {
 	optionComponent: PropTypes.func,      // option component to render in dropdown
 	optionRenderer: PropTypes.func,       // optionRenderer: function (option) {}
 	options: PropTypes.array,             // array of options
+	outerMenuAddonComponent: PropTypes.object,
 	pageSize: PropTypes.number,           // number of entries to page when using page up/down keys
 	placeholder: stringOrNode,            // field placeholder, displayed when there's no value
 	required: PropTypes.bool,             // applies HTML5 required attribute when needed
@@ -1119,7 +1126,6 @@ Select.propTypes = {
 };
 
 Select.defaultProps = {
-	addLabelText: 'Add "{label}"?',
 	arrowRenderer: defaultArrowRenderer,
 	autosize: true,
 	backspaceRemoves: true,
@@ -1160,6 +1166,7 @@ Select.defaultProps = {
 	tabSelectsValue: true,
 	valueComponent: Value,
 	valueKey: 'value',
+	outerMenuAddonComponent: <div/>
 };
 
 export default Select;
