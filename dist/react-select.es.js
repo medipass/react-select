@@ -483,6 +483,7 @@ var Option = function (_React$Component) {
 				{ className: className,
 					style: option.style,
 					role: 'option',
+					'aria-label': option.label,
 					onMouseDown: this.handleMouseDown,
 					onMouseEnter: this.handleMouseEnter,
 					onMouseMove: this.handleMouseMove,
@@ -681,7 +682,10 @@ var Select$1 = function (_React$Component) {
 	}, {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			if (this.props.autofocus) {
+			if (typeof this.props.autofocus !== 'undefined' && typeof console !== 'undefined') {
+				console.warn('Warning: The autofocus prop will be deprecated in react-select1.0.0 in favor of autoFocus to match React\'s autoFocus prop');
+			}
+			if (this.props.autoFocus || this.props.autofocus) {
 				this.focus();
 			}
 		}
@@ -747,11 +751,7 @@ var Select$1 = function (_React$Component) {
 	}, {
 		key: 'componentWillUnmount',
 		value: function componentWillUnmount() {
-			if (!document.removeEventListener && document.detachEvent) {
-				document.detachEvent('ontouchstart', this.handleTouchOutside);
-			} else {
-				document.removeEventListener('touchstart', this.handleTouchOutside);
-			}
+			this.toggleTouchOutsideEvent(false);
 		}
 	}, {
 		key: 'toggleTouchOutsideEvent',
@@ -1501,14 +1501,14 @@ var Select$1 = function (_React$Component) {
 			}
 			return React.createElement(
 				'div',
-				{ className: className },
+				{ className: className, key: 'input-wrap' },
 				React.createElement('input', inputProps)
 			);
 		}
 	}, {
 		key: 'renderClear',
 		value: function renderClear() {
-			if (!this.props.clearable || this.props.value === undefined || this.props.value === null || this.props.multi && !this.props.value.length || this.props.disabled || this.props.isLoading) return;
+			if (!this.props.clearable || this.props.value === undefined || this.props.value === null || this.props.value === '' || this.props.multi && !this.props.value.length || this.props.disabled || this.props.isLoading) return;
 			var clear = this.props.clearRenderer();
 
 			return React.createElement(
@@ -1526,9 +1526,15 @@ var Select$1 = function (_React$Component) {
 	}, {
 		key: 'renderArrow',
 		value: function renderArrow() {
+			if (!this.props.arrowRenderer) return;
+
 			var onMouseDown = this.handleMouseDownOnArrow;
 			var isOpen = this.state.isOpen;
 			var arrow = this.props.arrowRenderer({ onMouseDown: onMouseDown, isOpen: isOpen });
+
+			if (!arrow) {
+				return null;
+			}
 
 			return React.createElement(
 				'span',
@@ -1765,10 +1771,10 @@ Select$1.propTypes = {
 	'aria-describedby': PropTypes.string, // HTML ID(s) of element(s) that should be used to describe this input (for assistive tech)
 	'aria-label': PropTypes.string, // Aria label (for assistive tech)
 	'aria-labelledby': PropTypes.string, // HTML ID of an element that should be used as the label (for assistive tech)
-	addLabelText: PropTypes.string, // placeholder displayed when you want to add a label on a multi-value input
 	arrowRenderer: PropTypes.func, // Create drop-down caret element
 	autoBlur: PropTypes.bool, // automatically blur the component when an option is selected
-	autofocus: PropTypes.bool, // autofocus the component on mount
+	autofocus: PropTypes.bool, // deprecated; use autoFocus instead
+	autoFocus: PropTypes.bool, // autofocus the component on mount
 	autosize: PropTypes.bool, // whether to enable autosizing or not
 	backspaceRemoves: PropTypes.bool, // whether backspace removes an item if there is no text input
 	backspaceToRemoveMessage: PropTypes.string, // Message to use for screenreaders to press backspace to remove the current item - {label} is replaced with the item label
@@ -1838,7 +1844,6 @@ Select$1.propTypes = {
 };
 
 Select$1.defaultProps = {
-	addLabelText: 'Add "{label}"?',
 	arrowRenderer: arrowRenderer,
 	autosize: true,
 	backspaceRemoves: true,
@@ -1936,11 +1941,11 @@ var Async = function (_Component) {
 
 			var cache = _this._cache;
 
-			console.log('wtf');
-
 			_this.setState({ cacheKey: cacheKey });
 
 			if (cache && Object.prototype.hasOwnProperty.call(cache, '' + cacheKey + (inputValue ? '_' + inputValue : ''))) {
+				_this._callback = null;
+
 				_this.setState({
 					options: cache['' + cacheKey + (inputValue ? '_' + inputValue : '')].options,
 					page: cache['' + cacheKey + (inputValue ? '_' + inputValue : '')].page
@@ -1952,28 +1957,24 @@ var Async = function (_Component) {
 			}
 
 			var callback = function callback(error, data) {
-				if (callback === _this._callback) {
-					_this._callback = null;
+				var options = data && data.options || [];
 
-					var options = data && data.options || [];
+				var hasReachedLastPage = pagination && options.length === 0;
 
-					var hasReachedLastPage = pagination && options.length === 0;
-
-					if (page > 1) {
-						options = _this.state.currentOptions.concat(options);
-					}
-
-					if (cache) {
-						cache['' + cacheKey + (inputValue ? '_' + inputValue : '')] = { page: page, options: options, hasReachedLastPage: hasReachedLastPage };
-					}
-
-					_this.setState({
-						isLoading: false,
-						isLoadingPage: false,
-						page: page,
-						options: options
-					});
+				if (page > 1) {
+					options = _this.state.currentOptions.concat(options);
 				}
+
+				if (cache) {
+					cache['' + cacheKey + (inputValue ? '_' + inputValue : '')] = { page: page, options: options, hasReachedLastPage: hasReachedLastPage };
+				}
+
+				_this.setState({
+					isLoading: false,
+					isLoadingPage: false,
+					page: page,
+					options: options
+				});
 			};
 
 			// Ignore all but the most recent request
@@ -2280,13 +2281,15 @@ var CreatableSelect = function (_React$Component) {
 		value: function onInputChange(input) {
 			var onInputChange = this.props.onInputChange;
 
+			// This value may be needed in between Select mounts (when this.select is null)
+
+			this.inputValue = input;
 
 			if (onInputChange) {
-				onInputChange(input);
+				this.inputValue = onInputChange(input);
 			}
 
-			// This value may be needed in between Select mounts (when this.select is null)
-			this.inputValue = input;
+			return this.inputValue;
 		}
 	}, {
 		key: 'onInputKeyDown',
