@@ -1,4 +1,5 @@
 import stripDiacritics from './stripDiacritics';
+import trim from './trim';
 
 function filterOptions (options, filterValue, excludeOptions, props) {
 	if (props.ignoreAccents) {
@@ -7,6 +8,10 @@ function filterOptions (options, filterValue, excludeOptions, props) {
 
 	if (props.ignoreCase) {
 		filterValue = filterValue.toLowerCase();
+	}
+
+	if (props.trimFilter) {
+		filterValue = trim(filterValue);
 	}
 
 	if (excludeOptions) excludeOptions = excludeOptions.map(i => i[props.valueKey]);
@@ -18,10 +23,12 @@ function filterOptions (options, filterValue, excludeOptions, props) {
 		if (!filterValue) return true;
 		var valueTest = String(option[props.valueKey]);
 		var labelTest = String(option[props.labelKey]);
+
 		if (props.ignoreAccents) {
 			if (props.matchProp !== 'label') valueTest = stripDiacritics(valueTest);
 			if (props.matchProp !== 'value') labelTest = stripDiacritics(labelTest);
 		}
+
 		if (props.ignoreCase) {
 			if (props.matchProp !== 'label') valueTest = valueTest.toLowerCase();
 			if (props.matchProp !== 'value') labelTest = labelTest.toLowerCase();
