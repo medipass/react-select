@@ -72,7 +72,7 @@ export default class Async extends Component {
 		const { cacheKey } = this.state;
 
 		if (autoload) {
-			this.loadOptions('', 1, cacheKey);
+			this.loadOptions('', 1, {}, cacheKey);
 		}
 	}
 
@@ -88,7 +88,7 @@ export default class Async extends Component {
 		this._callback = null;
 	}
 
-	loadOptions = (inputValue, page = 1, cacheKey = 'default') => {
+	loadOptions = (inputValue, page = 1, opts = {}, cacheKey = 'default') => {
 		const { loadOptions, pagination } = this.props;
 		const cache = this._cache;
 
@@ -140,9 +140,9 @@ export default class Async extends Component {
 		let promise;
 
 		if (pagination) {
-			promise = loadOptions(inputValue, page, callback);
+			promise = loadOptions(inputValue, page, opts, callback);
 		} else {
-			promise = loadOptions(inputValue, callback);
+			promise = loadOptions(inputValue, opts, callback);
 		}
 
 		if (promise) {
@@ -185,7 +185,7 @@ export default class Async extends Component {
 		}
 
 		this.setState({ inputValue });
-		this.loadOptionsDebounced(transformedInputValue, 1, cacheKey);
+		this.loadOptionsDebounced(transformedInputValue, 1, {}, cacheKey);
 
 		// Return the original input value to avoid modifying the user's view of the input while typing.
 		return inputValue;
@@ -212,7 +212,7 @@ export default class Async extends Component {
 		const { cacheKey } = this.state;
 		if (!this.props.pagination || this.state.isLoading) return;
 
-		this.loadOptions(inputValue, this.state.page + 1, cacheKey);
+		this.loadOptions(inputValue, this.state.page + 1, {}, cacheKey);
 	}
 
 	render () {
