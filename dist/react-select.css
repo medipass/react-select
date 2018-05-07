@@ -8,6 +8,16 @@
 .Select {
   position: relative;
 }
+.Select input::-webkit-contacts-auto-fill-button,
+.Select input::-webkit-credentials-auto-fill-button {
+  display: none !important;
+}
+.Select input::-ms-clear {
+  display: none !important;
+}
+.Select input::-ms-reveal {
+  display: none !important;
+}
 .Select,
 .Select div,
 .Select input,
@@ -83,6 +93,10 @@
 .Select .Select-arrow-zone:hover > .Select-arrow {
   border-top-color: #666;
 }
+.Select.Select--rtl {
+  direction: rtl;
+  text-align: right;
+}
 .Select-control {
   background-color: #fff;
   border-color: #d9d9d9 #ccc #b3b3b3;
@@ -139,7 +153,7 @@
   font-size: inherit;
   margin: 0;
   outline: none;
-  line-height: 14px;
+  line-height: 17px;
   /* For IE 8 compatibility */
   padding: 8px 0 12px;
   /* For IE 8 compatibility */
@@ -206,6 +220,11 @@
   text-align: center;
   vertical-align: middle;
   width: 25px;
+  padding-right: 5px;
+}
+.Select--rtl .Select-arrow-zone {
+  padding-right: 0;
+  padding-left: 5px;
 }
 .Select-arrow {
   border-color: #999 transparent transparent;
@@ -223,6 +242,7 @@
   display: inline-block;
 }
 .Select .Select-aria-only {
+  position: absolute;
   display: inline-block;
   height: 1px;
   width: 1px;
@@ -258,6 +278,7 @@
   margin-top: -1px;
   max-height: 200px;
   position: absolute;
+  left: 0;
   top: 100%;
   width: 100%;
   z-index: 1;
@@ -306,6 +327,10 @@
   vertical-align: middle;
   margin-left: 10px;
   padding: 0;
+}
+.Select--multi.Select--rtl .Select-input {
+  margin-left: 0;
+  margin-right: 10px;
 }
 .Select--multi.has-value .Select-input {
   margin-left: 5px;
@@ -365,6 +390,16 @@
   background-color: #c2e0ff;
   /* Fallback color for IE 8 */
   background-color: rgba(0, 126, 255, 0.24);
+}
+.Select--multi.Select--rtl .Select-value {
+  margin-left: 0;
+  margin-right: 5px;
+}
+.Select--multi.Select--rtl .Select-value-icon {
+  border-right: none;
+  border-left: 1px solid #c2e0ff;
+  /* Fallback color for IE 8 */
+  border-left: 1px solid rgba(0, 126, 255, 0.24);
 }
 .Select--multi.is-disabled .Select-value {
   background-color: #fcfcfc;

@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import debounce from 'lodash/debounce';
+import debounce from 'lodash.debounce';
 import Select from './Select';
+
 import stripDiacritics from './utils/stripDiacritics';
+
 const propTypes = {
 	autoload: PropTypes.bool.isRequired,       // automatically call the `loadOptions` prop on-mount; defaults to true
 	cache: PropTypes.any,                      // object to use to cache results; set to null/false to disable caching
@@ -35,6 +37,8 @@ const propTypes = {
 };
 
 const defaultCache = {};
+
+const defaultChildren = props => <Select {...props} />;
 
 const defaultProps = {
 	autoload: true,
@@ -88,7 +92,7 @@ export default class Async extends Component {
 		this._callback = null;
 	}
 
-	loadOptions = (inputValue, page = 1, opts = {}, cacheKey = 'default') => {
+	loadOptions = (inputValue, page = 1, opts = {}, cacheKey = 'default') => { // eslint-disable-line
 		const { loadOptions, pagination } = this.props;
 		const cache = this._cache;
 
@@ -187,8 +191,8 @@ export default class Async extends Component {
 		this.setState({ inputValue });
 		this.loadOptionsDebounced(transformedInputValue, 1, {}, cacheKey);
 
-		// Return the original input value to avoid modifying the user's view of the input while typing.
-		return inputValue;
+		// Return new input value, but without applying toLowerCase() to avoid modifying the user's view case of the input while typing.
+		return newInputValue;
 	}
 
 	noResultsText() {
@@ -238,9 +242,3 @@ export default class Async extends Component {
 
 Async.propTypes = propTypes;
 Async.defaultProps = defaultProps;
-
-function defaultChildren (props) {
-	return (
-		<Select {...props} />
-	);
-}
