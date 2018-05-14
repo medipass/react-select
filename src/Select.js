@@ -107,6 +107,14 @@ class Select extends React.Component {
 			isPseudoFocused: false,
 			required: false,
 		};
+
+		this.input = React.createRef();
+		this.value = React.createRef();
+		this.name = React.createRef();
+		this.menuContainer = React.createRef();
+		this.menu = React.createRef();
+		this.wrapper = React.createRef();
+		this.control = React.createRef();
 	}
 
 	componentWillMount () {
@@ -911,7 +919,7 @@ class Select extends React.Component {
 					className={className}
 					onBlur={this.handleInputBlur}
 					onFocus={this.handleInputFocus}
-					ref={ref => this.input = ref}
+					ref={this.input}
 					role="combobox"
 					style={{ border: 0, width: 1, display:'inline-block' }}
 					tabIndex={this.props.tabIndex || 0}
@@ -1050,7 +1058,7 @@ class Select extends React.Component {
 				<input
 					disabled={this.props.disabled}
 					name={this.props.name}
-					ref={ref => this.value = ref}
+					ref={this.value}
 					type="hidden"
 					value={value}
 				/>
@@ -1060,7 +1068,7 @@ class Select extends React.Component {
 			<input
 				disabled={this.props.disabled}
 				key={`hidden.${index}`}
-				name={this.props.name}
+				name={this.name}
 				ref={`value${index}`}
 				type="hidden"
 				value={stringifyValue(item[this.props.valueKey])}
@@ -1101,13 +1109,13 @@ class Select extends React.Component {
 		}
 
 		return (
-			<div ref={ref => this.menuContainer = ref} className="Select-menu-outer" style={this.props.menuContainerStyle}>
+			<div ref={this.menuContainer} className="Select-menu-outer" style={this.props.menuContainerStyle}>
 				<div
 					className="Select-menu"
 					id={`${this._instancePrefix}-list`}
 					onMouseDown={this.handleMouseDownOnMenu}
 					onScroll={this.handleMenuScroll}
-					ref={ref => this.menu = ref}
+					ref={this.menu}
 					role="listbox"
 					style={this.props.menuStyle}
 					tabIndex={-1}
@@ -1161,11 +1169,11 @@ class Select extends React.Component {
 		}
 
 		return (
-			<div ref={ref => this.wrapper = ref}
+			<div ref={this.wrapper}
 				 className={className}
 				 style={this.props.wrapperStyle}>
 				{this.renderHiddenField(valueArray)}
-				<div ref={ref => this.control = ref}
+				<div ref={this.control}
 					className="Select-control"
 					onKeyDown={this.handleKeyDown}
 					onMouseDown={this.handleMouseDown}

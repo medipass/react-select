@@ -758,6 +758,14 @@ var Select$1 = function (_React$Component) {
 			isPseudoFocused: false,
 			required: false
 		};
+
+		_this.input = React.createRef();
+		_this.value = React.createRef();
+		_this.name = React.createRef();
+		_this.menuContainer = React.createRef();
+		_this.menu = React.createRef();
+		_this.wrapper = React.createRef();
+		_this.control = React.createRef();
 		return _this;
 	}
 
@@ -1652,9 +1660,7 @@ var Select$1 = function (_React$Component) {
 					className: className,
 					onBlur: this.handleInputBlur,
 					onFocus: this.handleInputFocus,
-					ref: function ref(_ref2) {
-						return _this6.input = _ref2;
-					},
+					ref: this.input,
 					role: 'combobox',
 					style: { border: 0, width: 1, display: 'inline-block' },
 					tabIndex: this.props.tabIndex || 0
@@ -1789,9 +1795,7 @@ var Select$1 = function (_React$Component) {
 				return React.createElement('input', {
 					disabled: this.props.disabled,
 					name: this.props.name,
-					ref: function ref(_ref3) {
-						return _this7.value = _ref3;
-					},
+					ref: this.value,
 					type: 'hidden',
 					value: value
 				});
@@ -1800,7 +1804,7 @@ var Select$1 = function (_React$Component) {
 				return React.createElement('input', {
 					disabled: _this7.props.disabled,
 					key: 'hidden.' + index,
-					name: _this7.props.name,
+					name: _this7.name,
 					ref: 'value' + index,
 					type: 'hidden',
 					value: stringifyValue(item[_this7.props.valueKey])
@@ -1837,8 +1841,6 @@ var Select$1 = function (_React$Component) {
 	}, {
 		key: 'renderOuter',
 		value: function renderOuter(options, valueArray, focusedOption) {
-			var _this8 = this;
-
 			var menu = this.renderMenu(options, valueArray, focusedOption);
 			if (!menu) {
 				return null;
@@ -1846,9 +1848,7 @@ var Select$1 = function (_React$Component) {
 
 			return React.createElement(
 				'div',
-				{ ref: function ref(_ref5) {
-						return _this8.menuContainer = _ref5;
-					}, className: 'Select-menu-outer', style: this.props.menuContainerStyle },
+				{ ref: this.menuContainer, className: 'Select-menu-outer', style: this.props.menuContainerStyle },
 				React.createElement(
 					'div',
 					{
@@ -1856,9 +1856,7 @@ var Select$1 = function (_React$Component) {
 						id: this._instancePrefix + '-list',
 						onMouseDown: this.handleMouseDownOnMenu,
 						onScroll: this.handleMenuScroll,
-						ref: function ref(_ref4) {
-							return _this8.menu = _ref4;
-						},
+						ref: this.menu,
 						role: 'listbox',
 						style: this.props.menuStyle,
 						tabIndex: -1
@@ -1871,8 +1869,6 @@ var Select$1 = function (_React$Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var _this9 = this;
-
 			var valueArray = this.getValueArray(this.props.value);
 			var options = this._visibleOptions = this.filterOptions(this.props.multi && this.props.removeSelected ? valueArray : null);
 			var isOpen = this.state.isOpen;
@@ -1910,17 +1906,13 @@ var Select$1 = function (_React$Component) {
 
 			return React.createElement(
 				'div',
-				{ ref: function ref(_ref7) {
-						return _this9.wrapper = _ref7;
-					},
+				{ ref: this.wrapper,
 					className: className,
 					style: this.props.wrapperStyle },
 				this.renderHiddenField(valueArray),
 				React.createElement(
 					'div',
-					{ ref: function ref(_ref6) {
-							return _this9.control = _ref6;
-						},
+					{ ref: this.control,
 						className: 'Select-control',
 						onKeyDown: this.handleKeyDown,
 						onMouseDown: this.handleMouseDown,
@@ -2127,6 +2119,7 @@ var Async = function (_Component) {
 			var page = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
 			var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 			var cacheKey = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'default';
+			// eslint-disable-line
 			var _this$props = _this.props,
 			    loadOptions = _this$props.loadOptions,
 			    pagination = _this$props.pagination;
