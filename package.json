@@ -88,8 +88,7 @@
     "lint": "eslint .",
     "deploy": "cross-env NODE_ENV=production nps publish",
     "start": "webpack-dev-server --progress",
-    "test": "cross-env NODE_ENV=test mocha --compilers js:babel-core/register",
-    "precommit": "lint-staged && yarn run test"
+    "test": "cross-env NODE_ENV=test mocha --compilers js:babel-core/register"
   },
   "files": [
     "dist",
