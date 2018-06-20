@@ -813,7 +813,7 @@ var Select$1 = function (_React$Component) {
 		key: 'componentDidUpdate',
 		value: function componentDidUpdate(prevProps, prevState) {
 			// focus to the selected option
-			if (this.menu && this.focused && this.state.isOpen && !this.hasScrolledToOption) {
+			if (this.menu && this.menu.current && this.focused && this.state.isOpen && !this.hasScrolledToOption) {
 				var focusedOptionNode = findDOMNode(this.focused);
 				var menuNode = findDOMNode(this.menu.current);
 
@@ -834,7 +834,7 @@ var Select$1 = function (_React$Component) {
 				this.hasScrolledToOption = false;
 			}
 
-			if (this._scrollToFocusedOptionOnUpdate && this.focused && this.menu) {
+			if (this._scrollToFocusedOptionOnUpdate && this.focused && this.menu && this.menu.current) {
 				this._scrollToFocusedOptionOnUpdate = false;
 				var focusedDOM = findDOMNode(this.focused);
 				var menuDOM = findDOMNode(this.menu.current);
@@ -846,7 +846,7 @@ var Select$1 = function (_React$Component) {
 					menuDOM.scrollTop = focusedDOM.offsetTop;
 				}
 			}
-			if (this.props.scrollMenuIntoView && this.menuContainer) {
+			if (this.props.scrollMenuIntoView && this.menuContainer && this.menuContainer.current) {
 				var menuContainerRect = this.menuContainer.current.getBoundingClientRect && this.menuContainer.current.getBoundingClientRect();
 				if (menuContainerRect && window.innerHeight < menuContainerRect.bottom + this.props.menuBuffer) {
 					window.scrollBy(0, menuContainerRect.bottom + this.props.menuBuffer - window.innerHeight);
@@ -888,20 +888,20 @@ var Select$1 = function (_React$Component) {
 		key: 'handleTouchOutside',
 		value: function handleTouchOutside(event) {
 			// handle touch outside on ios to dismiss menu
-			if (this.wrapper && !this.wrapper.current.contains(event.target)) {
+			if (this.wrapper && this.wrapper.current && !this.wrapper.current.contains(event.target)) {
 				this.closeMenu();
 			}
 		}
 	}, {
 		key: 'focus',
 		value: function focus() {
-			if (!this.input) return;
+			if (!this.input || !this.input.current) return;
 			this.input.current.focus();
 		}
 	}, {
 		key: 'blurInput',
 		value: function blurInput() {
-			if (!this.input) return;
+			if (!this.input || !this.input.current) return;
 			this.input.current.blur();
 		}
 	}, {
