@@ -156,7 +156,7 @@ class Select extends React.Component {
 
 	componentDidUpdate (prevProps, prevState) {
 		// focus to the selected option
-		if (this.menu && this.focused && this.state.isOpen && !this.hasScrolledToOption) {
+		if (this.menu && this.menu.current && this.focused && this.state.isOpen && !this.hasScrolledToOption) {
 			const focusedOptionNode = findDOMNode(this.focused);
 			let menuNode = findDOMNode(this.menu.current);
 
@@ -177,7 +177,7 @@ class Select extends React.Component {
 			this.hasScrolledToOption = false;
 		}
 
-		if (this._scrollToFocusedOptionOnUpdate && this.focused && this.menu) {
+		if (this._scrollToFocusedOptionOnUpdate && this.focused && this.menu && this.menu.current) {
 			this._scrollToFocusedOptionOnUpdate = false;
 			const focusedDOM = findDOMNode(this.focused);
 			let menuDOM = findDOMNode(this.menu.current);
@@ -189,7 +189,7 @@ class Select extends React.Component {
 				menuDOM.scrollTop = focusedDOM.offsetTop;
 			}
 		}
-		if (this.props.scrollMenuIntoView && this.menuContainer) {
+		if (this.props.scrollMenuIntoView && this.menuContainer && this.menuContainer.current) {
 			const menuContainerRect = this.menuContainer.current.getBoundingClientRect && this.menuContainer.current.getBoundingClientRect();
 			if (menuContainerRect && window.innerHeight < menuContainerRect.bottom + this.props.menuBuffer) {
 				window.scrollBy(0, menuContainerRect.bottom + this.props.menuBuffer - window.innerHeight);
@@ -228,18 +228,18 @@ class Select extends React.Component {
 
 	handleTouchOutside (event) {
 		// handle touch outside on ios to dismiss menu
-		if (this.wrapper && !this.wrapper.current.contains(event.target)) {
+		if (this.wrapper && this.wrapper.current && !this.wrapper.current.contains(event.target)) {
 			this.closeMenu();
 		}
 	}
 
 	focus () {
-		if (!this.input) return;
+		if (!this.input || !this.input.current) return;
 		this.input.current.focus();
 	}
 
 	blurInput () {
-		if (!this.input) return;
+		if (!this.input || !this.input.current) return;
 		this.input.current.blur();
 	}
 
