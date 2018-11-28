@@ -1,6 +1,6 @@
 {
   "name": "@medipass/react-select",
-  "version": "1.3.0-0",
+  "version": "1.3.0-1",
   "description": "A Select control built with and for ReactJS",
   "main": "lib/index.js",
   "jsnext:main": "dist/react-select.es.js",
