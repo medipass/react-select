@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import debounce from 'lodash.debounce';
+import debounce from 'debounce-fn';
 import Select from './Select';
 
 import stripDiacritics from './utils/stripDiacritics';
@@ -17,7 +17,6 @@ const propTypes = {
 		PropTypes.node
 	]),
 	multi: PropTypes.bool,                     // multi-value input
-	pagination: PropTypes.bool,								 // automatically load more options when the option list is scrolled to the end; default to false
 	noResultsText: PropTypes.oneOfType([       // field noResultsText, displayed when no options come back from the server
 		PropTypes.string,
 		PropTypes.node
@@ -25,6 +24,7 @@ const propTypes = {
 	onChange: PropTypes.func,                  // onChange handler: function (newValue) {}
 	onInputChange: PropTypes.func,             // optional for keeping track of what is being typed
 	options: PropTypes.array.isRequired,       // array of options
+	pagination: PropTypes.bool,				   // automatically load more options when the option list is scrolled to the end; default to false
 	placeholder: PropTypes.oneOfType([         // field placeholder, displayed when there's no value (shared with Select)
 		PropTypes.string,
 		PropTypes.node
@@ -69,6 +69,8 @@ export default class Async extends Component {
 
 		this._onInputChange = this._onInputChange.bind(this);
 		this._onMenuScrollToBottom = this._onMenuScrollToBottom.bind(this);
+		this.loadOptions = this.loadOptions.bind(this);
+		this.loadOptionsDebounced = debounce(this.loadOptions, { wait: 500 });
 	}
 
 	componentDidMount () {
@@ -92,7 +94,7 @@ export default class Async extends Component {
 		this._callback = null;
 	}
 
-	loadOptions = (inputValue, page = 1, opts = {}, cacheKey = 'default') => { // eslint-disable-line
+	loadOptions(inputValue, page = 1, opts = {}, cacheKey = 'default') {
 		const { loadOptions, pagination } = this.props;
 		const cache = this._cache;
 
@@ -169,8 +171,6 @@ export default class Async extends Component {
 		}
 	}
 
-	loadOptionsDebounced = debounce((...args) => this.loadOptions(...args), 500);
-
 	_onInputChange (inputValue) {
 		const { ignoreAccents, ignoreCase, onInputChange } = this.props;
 		const { cacheKey } = this.state;
@@ -192,7 +192,7 @@ export default class Async extends Component {
 		this.loadOptionsDebounced(transformedInputValue, 1, {}, cacheKey);
 
 		// Return new input value, but without applying toLowerCase() to avoid modifying the user's view case of the input while typing.
-		return newInputValue;
+		return transformedInputValue;
 	}
 
 	noResultsText() {
@@ -215,7 +215,6 @@ export default class Async extends Component {
 	_onMenuScrollToBottom (inputValue) {
 		const { cacheKey } = this.state;
 		if (!this.props.pagination || this.state.isLoading) return;
-
 		this.loadOptions(inputValue, this.state.page + 1, {}, cacheKey);
 	}
 

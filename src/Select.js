@@ -107,14 +107,6 @@ class Select extends React.Component {
 			isPseudoFocused: false,
 			required: false,
 		};
-
-		this.input = React.createRef();
-		this.value = React.createRef();
-		this.name = React.createRef();
-		this.menuContainer = React.createRef();
-		this.menu = React.createRef();
-		this.wrapper = React.createRef();
-		this.control = React.createRef();
 	}
 
 	componentWillMount () {
@@ -156,9 +148,9 @@ class Select extends React.Component {
 
 	componentDidUpdate (prevProps, prevState) {
 		// focus to the selected option
-		if (this.menu && this.menu.current && this.focused && this.state.isOpen && !this.hasScrolledToOption) {
+		if (this.menu && this.focused && this.state.isOpen && !this.hasScrolledToOption) {
 			const focusedOptionNode = findDOMNode(this.focused);
-			let menuNode = findDOMNode(this.menu.current);
+			let menuNode = findDOMNode(this.menu);
 
 			const scrollTop = menuNode.scrollTop;
 			const scrollBottom = scrollTop + menuNode.offsetHeight;
@@ -177,10 +169,10 @@ class Select extends React.Component {
 			this.hasScrolledToOption = false;
 		}
 
-		if (this._scrollToFocusedOptionOnUpdate && this.focused && this.menu && this.menu.current) {
+		if (this._scrollToFocusedOptionOnUpdate && this.focused && this.menu) {
 			this._scrollToFocusedOptionOnUpdate = false;
 			const focusedDOM = findDOMNode(this.focused);
-			let menuDOM = findDOMNode(this.menu.current);
+			let menuDOM = findDOMNode(this.menu);
 			const focusedRect = focusedDOM.getBoundingClientRect();
 			const menuRect = menuDOM.getBoundingClientRect();
 			if (focusedRect.bottom > menuRect.bottom) {
@@ -189,9 +181,9 @@ class Select extends React.Component {
 				menuDOM.scrollTop = focusedDOM.offsetTop;
 			}
 		}
-		if (this.props.scrollMenuIntoView && this.menuContainer && this.menuContainer.current) {
-			const menuContainerRect = this.menuContainer.current.getBoundingClientRect && this.menuContainer.current.getBoundingClientRect();
-			if (menuContainerRect && window.innerHeight < menuContainerRect.bottom + this.props.menuBuffer) {
+		if (this.props.scrollMenuIntoView && this.menuContainer) {
+			const menuContainerRect = this.menuContainer.getBoundingClientRect();
+			if (window.innerHeight < menuContainerRect.bottom + this.props.menuBuffer) {
 				window.scrollBy(0, menuContainerRect.bottom + this.props.menuBuffer - window.innerHeight);
 			}
 		}
@@ -222,19 +214,19 @@ class Select extends React.Component {
 
 	handleTouchOutside (event) {
 		// handle touch outside on ios to dismiss menu
-		if (this.wrapper && this.wrapper.current && !this.wrapper.current.contains(event.target)) {
+		if (this.wrapper && !this.wrapper.contains(event.target)) {
 			this.closeMenu();
 		}
 	}
 
 	focus () {
-		if (!this.input || !this.input.current) return;
-		this.input.current.focus();
+		if (!this.input) return;
+		this.input.focus();
 	}
 
 	blurInput () {
-		if (!this.input || !this.input.current) return;
-		this.input.current.blur();
+		if (!this.input) return;
+		this.input.blur();
 	}
 
 	handleTouchMove () {
@@ -566,7 +558,7 @@ class Select extends React.Component {
 	handleMenuScroll (event) {
 		if (!this.props.onMenuScrollToBottom) return;
 		let { target } = event;
-		if (target.scrollHeight > target.offsetHeight && !(target.scrollHeight - target.offsetHeight - target.scrollTop)) {
+		if (target.scrollHeight > target.offsetHeight && (target.scrollHeight - target.offsetHeight - target.scrollTop) <= 0) {
 			this.props.onMenuScrollToBottom(this.state.inputValue);
 		}
 	}
@@ -916,7 +908,7 @@ class Select extends React.Component {
 					className={className}
 					onBlur={this.handleInputBlur}
 					onFocus={this.handleInputFocus}
-					ref={this.input}
+					ref={ref => this.input = ref}
 					role="combobox"
 					style={{ border: 0, width: 1, display:'inline-block' }}
 					tabIndex={this.props.tabIndex || 0}
@@ -1055,7 +1047,7 @@ class Select extends React.Component {
 				<input
 					disabled={this.props.disabled}
 					name={this.props.name}
-					ref={this.value}
+					ref={ref => this.value = ref}
 					type="hidden"
 					value={value}
 				/>
@@ -1065,7 +1057,7 @@ class Select extends React.Component {
 			<input
 				disabled={this.props.disabled}
 				key={`hidden.${index}`}
-				name={this.name}
+				name={this.props.name}
 				ref={`value${index}`}
 				type="hidden"
 				value={stringifyValue(item[this.props.valueKey])}
@@ -1106,13 +1098,13 @@ class Select extends React.Component {
 		}
 
 		return (
-			<div ref={this.menuContainer} className="Select-menu-outer" style={this.props.menuContainerStyle}>
+			<div ref={ref => this.menuContainer = ref} className="Select-menu-outer" style={this.props.menuContainerStyle}>
 				<div
 					className="Select-menu"
 					id={`${this._instancePrefix}-list`}
 					onMouseDown={this.handleMouseDownOnMenu}
 					onScroll={this.handleMenuScroll}
-					ref={this.menu}
+					ref={ref => this.menu = ref}
 					role="listbox"
 					style={this.props.menuStyle}
 					tabIndex={-1}
@@ -1166,11 +1158,11 @@ class Select extends React.Component {
 		}
 
 		return (
-			<div ref={this.wrapper}
+			<div ref={ref => this.wrapper = ref}
 				 className={className}
 				 style={this.props.wrapperStyle}>
 				{this.renderHiddenField(valueArray)}
-				<div ref={this.control}
+				<div ref={ref => this.control = ref}
 					className="Select-control"
 					onKeyDown={this.handleKeyDown}
 					onMouseDown={this.handleMouseDown}
@@ -1253,7 +1245,7 @@ Select.propTypes = {
 	optionComponent: PropTypes.func,      // option component to render in dropdown
 	optionRenderer: PropTypes.func,       // optionRenderer: function (option) {}
 	options: PropTypes.array,             // array of options
-	outerMenuAddonComponent: PropTypes.object,
+	outerMenuAddonComponent: PropTypes.element,
 	pageSize: PropTypes.number,           // number of entries to page when using page up/down keys
 	placeholder: stringOrNode,            // field placeholder, displayed when there's no value
 	removeSelected: PropTypes.bool,       // whether the selected option is removed from the dropdown on multi selects
@@ -1306,6 +1298,7 @@ Select.defaultProps = {
 	onSelectResetsInput: true,
 	openOnClick: true,
 	optionComponent: Option,
+	outerMenuAddonComponent: null,
 	pageSize: 5,
 	placeholder: 'Select...',
 	removeSelected: true,
@@ -1318,7 +1311,6 @@ Select.defaultProps = {
  	trimFilter: true,
 	valueComponent: Value,
 	valueKey: 'value',
-	outerMenuAddonComponent: <div/>
 };
 
 export default Select;
