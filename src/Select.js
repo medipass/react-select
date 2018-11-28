@@ -211,19 +211,13 @@ class Select extends React.Component {
 	}
 
 	toggleTouchOutsideEvent (enabled) {
-		if (enabled) {
-			if (!document.addEventListener && document.attachEvent) {
-				document.attachEvent('ontouchstart', this.handleTouchOutside);
-			} else {
-				document.addEventListener('touchstart', this.handleTouchOutside);
-			}
-		} else {
-			if (!document.removeEventListener && document.detachEvent) {
-				document.detachEvent('ontouchstart', this.handleTouchOutside);
-			} else {
-				document.removeEventListener('touchstart', this.handleTouchOutside);
-			}
-		}
+		var eventTogglerName = enabled ?
+			(document.addEventListener ? 'addEventListener' : 'attachEvent') :
+			(document.removeEventListener ? 'removeEventListener' : 'detachEvent');
+		var pref = document.addEventListener ? '' : 'on';
+
+		document[eventTogglerName](pref + 'touchstart', this.handleTouchOutside);
+		document[eventTogglerName](pref + 'mousedown', this.handleTouchOutside);
 	}
 
 	handleTouchOutside (event) {
@@ -286,6 +280,7 @@ class Select extends React.Component {
 				this.setState({
 					isOpen: true,
 					isPseudoFocused: false,
+					focusedOption: null,
 				});
 			}
 
@@ -301,6 +296,7 @@ class Select extends React.Component {
 			this.focus();
 			return this.setState({
 				isOpen: !this.state.isOpen,
+				focusedOption: null,
 			});
 		}
 
@@ -654,6 +650,7 @@ class Select extends React.Component {
 		const visibleOptions = this._visibleOptions.filter(val => !val.disabled);
 		const lastValueIndex = visibleOptions.indexOf(value);
 		this.setValue(valueArray.concat(value));
+		if(!this.props.closeOnSelect) { return; }
 		if (visibleOptions.length - 1 === lastValueIndex) {
 			// the last option was selected; focus the second-last one
 			this.focusOption(visibleOptions[lastValueIndex - 1]);
@@ -835,6 +832,7 @@ class Select extends React.Component {
 						onRemove={this.removeValue}
 						placeholder={this.props.placeholder}
 						value={value}
+						values={valueArray}
 					>
 						{renderLabel(value, i)}
 						<span className="Select-aria-only">&nbsp;</span>
@@ -885,7 +883,6 @@ class Select extends React.Component {
 			'aria-label': this.props['aria-label'],
 			'aria-labelledby': this.props['aria-labelledby'],
 			'aria-owns': ariaOwns,
-			className: className,
 			onBlur: this.handleInputBlur,
 			onChange: this.handleInputChange,
 			onFocus: this.handleInputFocus,
@@ -929,7 +926,7 @@ class Select extends React.Component {
 
 		if (this.props.autosize) {
 			return (
-				<AutosizeInput id={this.props.id} {...inputProps} minWidth="5" />
+				<AutosizeInput id={this.props.id} {...inputProps} className={className} minWidth="5" />
 			);
 		}
 		return (
@@ -1182,10 +1179,10 @@ class Select extends React.Component {
 					onTouchStart={this.handleTouchStart}
 					style={this.props.style}
 				>
-					<span className="Select-multi-value-wrapper" id={`${this._instancePrefix}-value`}>
+					<div className="Select-multi-value-wrapper" id={`${this._instancePrefix}-value`}>
 						{this.renderValue(valueArray, isOpen)}
 						{this.renderInput(valueArray, focusedOptionIndex)}
-					</span>
+					</div>
 					{removeMessage}
 					{this.renderLoading()}
 					{this.renderClear()}

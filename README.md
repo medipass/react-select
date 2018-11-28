@@ -11,26 +11,26 @@ A Select control built with and for [React](http://facebook.github.io/react/inde
 
 ---
 
-## v2.0.0 Beta
+## v2.0.0
 
-A major update to React-select is coming! v2 is all new with some major API improvements, a powerful
+A major update to React-select has come! React-Select v2 is a complete rewrite, all new with some major API improvements, a powerful
 new styles and components API, and support for some long-requested features like option groups.
 
 To install the new version:
 
 ```
-yarn add react-select@next
+yarn add react-select
 ```
 
-Check out the [v2 documentation](https://deploy-preview-2289--react-select.netlify.com)
-and [upgrade guide](https://deploy-preview-2289--react-select.netlify.com/upgrade-guide).
+Check out the [v2 documentation](https://react-select.com/home)
+and [upgrade guide](https://react-select.com/upgrade-guide).
 
 ---
 
 
 ## Demo & Examples
 
-Live demo: [jedwatson.github.io/react-select](http://jedwatson.github.io/react-select/)
+Live demo: [https://v1.react-select.com/](https://v1.react-select.com/)
 
 
 ## Installation
@@ -38,7 +38,7 @@ Live demo: [jedwatson.github.io/react-select](http://jedwatson.github.io/react-s
 The easiest way to use react-select is to install it from npm and build it into your app with Webpack.
 
 ```
-yarn add react-select
+yarn add react-select@1.x
 ```
 
 You can then import react-select and its styles in your application as follows:
@@ -82,13 +82,13 @@ class App extends React.Component {
   }
   handleChange = (selectedOption) => {
     this.setState({ selectedOption });
-		// selectedOption can be null when the `x` (close) button is clicked
-		if (selectedOption) {
-    	console.log(`Selected: ${selectedOption.label}`);
-		}
+    // selectedOption can be null when the `x` (close) button is clicked
+    if (selectedOption) {
+      console.log(`Selected: ${selectedOption.label}`);
+    }
   }
   render() {
-  	const { selectedOption } = this.state;
+    const { selectedOption } = this.state;
 
     return (
       <Select
@@ -166,8 +166,8 @@ const getOptions = (input, callback) => {
 };
 
 <Async
-    name="form-field-name"
-    loadOptions={getOptions}
+  name="form-field-name"
+  loadOptions={getOptions}
 />
 ```
 
@@ -351,13 +351,13 @@ You can manipulate the input by providing a `onInputChange` callback that return
 
 ```js
 function cleanInput(inputValue) {
-    // Strip all non-number characters from the input
-    return inputValue.replace(/[^0-9]/g, "");
-}   
+  // Strip all non-number characters from the input
+  return inputValue.replace(/[^0-9]/g, "");
+}
 
 <Select
-    name="form-field-name"
-    onInputChange={cleanInput}
+  name="form-field-name"
+  onInputChange={cleanInput}
 />
 ```
 
@@ -368,20 +368,20 @@ You can extend or override this behaviour by providing a `onInputKeyDown` callba
 
 ```js
 function onInputKeyDown(event) {
-    switch (event.keyCode) {
-        case 9:   // TAB
-            // Extend default TAB behaviour by doing something here
-            break;
-        case 13: // ENTER
-            // Override default ENTER behaviour by doing stuff here and then preventing default
-            event.preventDefault();
-            break;
-    }
+  switch (event.keyCode) {
+    case 9: // TAB
+      // Extend default TAB behaviour by doing something here
+      break;
+    case 13: // ENTER
+      // Override default ENTER behaviour by doing stuff here and then preventing default
+      event.preventDefault();
+      break;
+  }
 }
 
 <Select
-    {...otherProps}
-    onInputKeyDown={onInputKeyDown}
+  {...otherProps}
+  onInputKeyDown={onInputKeyDown}
 />
 ```
 
@@ -461,7 +461,7 @@ function onInputKeyDown(event) {
 | `style` | object | undefined | optional styles to apply to the control |
 | `tabIndex` | string or number | undefined | tabIndex of the control |
 | `tabSelectsValue` | boolean | true | whether to select the currently focused value when the `[tab]` key is pressed |
-| `trimFilter` | boolean | false | whether to trim whitespace from the filter value |
+| `trimFilter` | boolean | true | whether to trim whitespace from the filter value |
 | `value` | any | undefined | initial field value |
 | `valueComponent` | function | <Value /> | function which returns a custom way to render/manage the value selected `<CustomValue />` |
 | `valueKey` | string | 'value' | the option property to use for the value |
@@ -552,7 +552,7 @@ function onInputKeyDown(event) {
 | `onNewOptionClick` | function | new option click handler, it calls when new option has been selected. `function(option) {}` |
 | `shouldKeyDownEventCreateNewOption` | function | Decides if a keyDown event (eg its `keyCode`) should result in the creation of a new option. ENTER, TAB and comma keys create new options by default. Expected signature: `({ keyCode: number }): boolean` |
 | `promptTextCreator` | function | Factory for overriding default option creator prompt label. By default it will read 'Create option "{label}"'. Expected signature: `(label: String): String` |
->>>>>>> 404bf1430e1fa36c74b37a742d7ee2fd6a171518
+| `showNewOptionAtTop` | boolean | `true`: (Default) Show new option at top of list <br> `false`: Show new option at bottom of list |
 
 ### Methods
 
